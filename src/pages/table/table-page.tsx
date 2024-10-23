@@ -1,18 +1,20 @@
 import { DataTable } from "@components/data-table/data-table";
 import { columns } from "./components/columns";
 import PageTitle from "@components/commons/page-title";
-import { useState,useRef } from "react";
+import { useState, useRef } from "react";
 import { useGetAllProducts } from "@apis/queries/product";
 import { PaginationState } from "@tanstack/react-table";
 import Toolbar from "./components/tool-bar";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import 'handsontable/dist/handsontable.full.min.css';
-import Handsontable from 'handsontable/base';
-import { registerAllModules } from 'handsontable/registry';
+import "handsontable/dist/handsontable.full.min.css";
+import Handsontable from "handsontable/base";
+import { registerAllModules } from "handsontable/registry";
+import accountData from "../../assets/accounts.json";
+import costCenterData from "../../assets/cost-centers.json";
 
 registerAllModules();
-import { HotTable } from '@handsontable/react';
+import { HotTable } from "@handsontable/react";
 
 type FormType = {
   category: string;
@@ -36,7 +38,15 @@ export function Table() {
   const hotRef = useRef(null);
   const [columns, setColumns] = useState([]);
 
+  const glAccountDropdown = accountData.map(
+    (item) => `${item.GLAccount} - ${item.ShortText}`
+  );
+  const costCenterDropdown = costCenterData.map(
+    (item) => `${item.CostCenterCode} - ${item.Name}`
+  );
+  console.log(glAccountDropdown, "glAccountDropdown");
   const columnHeaders = [
+    "Date",
     "GL Account",
     "Amount",
     "Cost Center",
@@ -50,22 +60,52 @@ export function Table() {
   //   limit: paginationState.pageSize,
   //   ...toolbarForm.watch(),
   // });
-
+  const tableData = [
+    {  date :"" ,glAccount: "", amount: 10, costCenter: "", ccOwner: "", profitCenter: "",},
+    { date :"" , glAccount: "", amount: 20, costCenter: "", ccOwner: "", profitCenter: "", },
+    {date :"" ,glAccount: "", amount: 30, costCenter: "", ccOwner: "", profitCenter: "", },
+  ];
   return (
     <div className="w-full space-y-4">
       <PageTitle title={t("table.pageTitle")} desc={t("table.pageDesc")} />
 
       <Toolbar form={toolbarForm} />
       <HotTable
-  data={[
-    ['', 'Tesla', 'Volvo', 'Toyota', 'Ford'],
-    ['2019', 10, 11, 12, 13],
-    ['2020', 20, 11, 14, 13],
-    ['2021', 30, 15, 12, 13]
-  ]}
-  colHeaders={columnHeaders}
+      data={tableData}
+        // data={[
+        //   ["", "Tesla", " ", "Toyota", "Ford"],
+        //   ["2019", 10, 11, 12, 13],
+        //   ["2020", 20, 11, 14, 13],
+        //   ["2021", 30, 15, 12, 13],
+        // ]}
+        colHeaders={columnHeaders}
+        columns={[
+          {
+            type: "date",
+            data: "date", // Matches the key in tableData
+            readOnly: false,
+            width:"90"  // editable
+          },
+          {
+            type: "autocomplete",
+            source: glAccountDropdown,
+            data: "glAccount", // Matches the key in tableData
+            readOnly: false,  // editable
+          },
+          { data: "amount", type: 'numeric' },
+          {
+            type: "autocomplete",
+            source: costCenterDropdown,
+            data: "costCenter",  // edit able 
+            readOnly: false,
+          },
+          { data: "ccOwner" },
+          { data: "profitCenter" },
+          
+        ]}
+        // className="custom-header-table" 
         // columns={columns}
-  stretchH="all"
+        stretchH="all"
         manualRowResize={true}
         manualColumnResize={true}
         rowHeaders={true}
@@ -76,14 +116,13 @@ export function Table() {
         width="100%"
         hiddenColumns={{
           indicators: true,
-          columns: [5],
+          columns: [6],
         }}
         readOnly={true}
         dropdownMenu={true}
         ref={hotRef}
         licenseKey="non-commercial-and-evaluation" // for non-commercial use
-/>
-
+      />
 
       {/* <DataTable
         data={data?.data.products}
