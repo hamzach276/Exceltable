@@ -3,26 +3,32 @@
         "CostCenterID": "1",
         "Name": "Chief Executive Offi",
         "CoArea": "",
-        "CostCenterCode": "0001100101"
+        "CostCenterCode": "0001100101",
+        "ccOwner":"Ali hassan"
  
     },
     {
         "CostCenterID": "2",
         "Name": "Corporate Audit",
         "CoArea": "",
-        "CostCenterCode": "0001100102"
+        "CostCenterCode": "0001100102",
+        "ccOwner":"Imran Hussain"
      
     },
     {
         "CostCenterID": "4",
         "Name": "Legal Charges",
         "CoArea": "",
-        "CostCenterCode": "0001100114"
+        "CostCenterCode": "0001100114",
+        "ccOwner":"Imran Hussain"
+
     },
     {
         "CostCenterID": "6",
         "Name": "Chief Financial Offi",
         "CoArea": "",
-        "CostCenterCode": "0001100201"
+        "CostCenterCode": "0001100201",
+        "ccOwner":"Imran Husain"
+
     }
 ]

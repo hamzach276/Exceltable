@@ -65,6 +65,25 @@ export function Table() {
     { date :"" , glAccount: "", amount: 20, costCenter: "", ccOwner: "", profitCenter: "", },
     {date :"" ,glAccount: "", amount: 30, costCenter: "", ccOwner: "", profitCenter: "", },
   ];
+  const updateCCOwner = (row: any, costCenterValue : any) => {
+    const selectedCostCenter = costCenterData.find(
+      (item) => `${item.CostCenterCode} - ${item.Name}` === costCenterValue
+    );
+    return selectedCostCenter ? selectedCostCenter.ccOwner : "";
+  };
+
+  const afterChangeHandler = (changes: any, source: any) => {
+    if (source === "loadData") return; // Prevent loop on data load
+
+    if (changes) {
+      changes.forEach(([row, prop, oldValue, newValue]) => {
+        if (prop === "costCenter") {
+          const newCCOwner = updateCCOwner(row, newValue);
+          hotRef.current.hotInstance.setDataAtRowProp(row, "ccOwner", newCCOwner);
+        }
+      });
+    }
+  };
   return (
     <div className="w-full space-y-4">
       <PageTitle title={t("table.pageTitle")} desc={t("table.pageDesc")} />
@@ -103,7 +122,7 @@ export function Table() {
           { data: "profitCenter" },
           
         ]}
-        // className="custom-header-table" 
+        className="custom-table"  // Add a unique class name
         // columns={columns}
         stretchH="all"
         manualRowResize={true}
@@ -120,6 +139,7 @@ export function Table() {
         }}
         readOnly={true}
         dropdownMenu={true}
+        afterChange={afterChangeHandler}
         ref={hotRef}
         licenseKey="non-commercial-and-evaluation" // for non-commercial use
       />

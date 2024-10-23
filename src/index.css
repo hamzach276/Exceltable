@@ -60,7 +60,11 @@
     --chart-5: 0 59% 41%;
   }
 }
-
+.custom-table .ht_clone_top th {
+  background-color: white; /* Change to your preferred color */
+  color: black;
+  font-weight: bold;
+}
 @layer base {
   * {
     @apply border-border;
