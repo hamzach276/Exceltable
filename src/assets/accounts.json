@@ -1,0 +1,38 @@
+[
+    {
+        "ChargeAccountID": "1",
+        "CompanyCode": "",
+        "GLAccount": "0001130101",
+        "ShortText": "Gross Salary",
+        "LongText": "",
+        "CreatedBy": "Administrator",
+        "CreatedDate": "12/1/2021 12:00:00 AM",
+        "ModifiedBy": "Administrator",
+        "ModifiedDate": "12/1/2021 12:00:00 AM",
+        "IsActive": "True"
+    },
+    {
+        "ChargeAccountID": "3",
+        "CompanyCode": "",
+        "GLAccount": "000130103",
+        "ShortText": "Gratuity DB fund",
+        "LongText": "",
+        "CreatedBy": "Administrator",
+        "CreatedDate": "12/1/2021 12:00:00 AM",
+        "ModifiedBy": "Administrator",
+        "ModifiedDate": "12/1/2021 12:00:00 AM",
+        "IsActive": "True"
+    },
+    {
+        "ChargeAccountID": "24",
+        "CompanyCode": "",
+        "GLAccount": "0001130124",
+        "ShortText": "Group Medical/Group Term Life Insurance Exp",
+        "LongText": "",
+        "CreatedBy": "Administrator",
+        "CreatedDate": "12/1/2021 12:00:00 AM",
+        "ModifiedBy": "Administrator",
+        "ModifiedDate": "12/1/2021 12:00:00 AM",
+        "IsActive": "True"
+    }
+]

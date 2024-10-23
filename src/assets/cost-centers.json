@@ -1,0 +1,28 @@
+[
+    {
+        "CostCenterID": "1",
+        "Name": "Chief Executive Offi",
+        "CoArea": "",
+        "CostCenterCode": "0001100101"
+ 
+    },
+    {
+        "CostCenterID": "2",
+        "Name": "Corporate Audit",
+        "CoArea": "",
+        "CostCenterCode": "0001100102"
+     
+    },
+    {
+        "CostCenterID": "4",
+        "Name": "Legal Charges",
+        "CoArea": "",
+        "CostCenterCode": "0001100114"
+    },
+    {
+        "CostCenterID": "6",
+        "Name": "Chief Financial Offi",
+        "CoArea": "",
+        "CostCenterCode": "0001100201"
+    }
+]
