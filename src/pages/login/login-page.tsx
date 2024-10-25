@@ -46,11 +46,11 @@ export function Login() {
       >
         <div>
           <Text size="xxl">{t("login.loginHere")}</Text>
-          <Text className="text-muted-foreground">
+          {/* <Text className="text-muted-foreground">
             {`${t("login.username")} - admin | ${t(
               "login.password"
             )} - password`}
-          </Text>
+          </Text> */}
         </div>
 
         <TextInput

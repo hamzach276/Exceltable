@@ -137,7 +137,7 @@ export function Table() {
           indicators: true,
           columns: [6],
         }}
-        readOnly={true}
+        // readOnly={true}
         dropdownMenu={true}
         afterChange={afterChangeHandler}
         ref={hotRef}

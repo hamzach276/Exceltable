@@ -7,6 +7,7 @@ import {
   ArrowDownFromLine,
   Ellipsis,
   Plus,
+  RefreshCcw ,
   SlidersHorizontal,
   X,
 } from "lucide-react";
@@ -70,13 +71,13 @@ function Toolbar({ form }: Props) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="space-y-1">
             <DropdownMenuItem>
-              <Plus className="h-4 w-4 mr-1" />
-              Add New
+              <RefreshCcw className="h-4 w-4 mr-1" />
+              Update
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDownloadReport}>
+            {/* <DropdownMenuItem onClick={handleDownloadReport}>
               <ArrowDownFromLine className="h-4 w-4 mr-1" />
               Download Report
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       </Between>
@@ -114,11 +115,11 @@ function Toolbar({ form }: Props) {
               "flex flex-col sm:flex-row gap-4 overflow-hidden transition-all duration-300"
             )}
           >
-            <TextInput
+            {/* <TextInput
               placeholder="Search Products"
               name="search"
               form={form}
-            />
+            /> */}
 
             {/* <CategorySelect
               placeholder="Choose Category"
@@ -131,14 +132,14 @@ function Toolbar({ form }: Props) {
 
         <div className="flex gap-4">
           <Button>
-            <Plus className="h-4 w-4 mr-1" />
-            Add New
+            <RefreshCcw  className="h-4 w-4 mr-1" />
+         Update
           </Button>
 
-          <Button onClick={handleDownloadReport}>
+          {/* <Button onClick={handleDownloadReport}>
             <ArrowDownFromLine className="h-4 w-4 mr-1" />
             Download Report
-          </Button>
+          </Button> */}
         </div>
       </Between>
     </div>
