@@ -11,7 +11,7 @@ interface APIError extends AxiosError {
 
 // Create axios instance with default config
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:44311',
+    baseURL: 'http://kmytrust-001-site2.atempurl.com',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',

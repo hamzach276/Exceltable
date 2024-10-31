@@ -26,7 +26,7 @@ interface Props {
   form: any;
 }
 
-function Toolbar({ form }: Props) {
+function Toolbar({ form, onUpdate }: { form: Props; onUpdate: () => void }) {
   const { generateExcel } = useReport();
   const [openFilters, setOpenFilters] = useState<boolean>(false);
 
@@ -131,7 +131,7 @@ function Toolbar({ form }: Props) {
         </Form>
 
         <div className="flex gap-4">
-          <Button>
+          <Button onClick={onUpdate}>
             <RefreshCcw  className="h-4 w-4 mr-1" />
          Update
           </Button>
