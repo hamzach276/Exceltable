@@ -1,4 +1,5 @@
-﻿using Abp.EntityFrameworkCore.Configuration;
+﻿using Abp.Dapper;
+using Abp.EntityFrameworkCore.Configuration;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.EntityFrameworkCore;
@@ -8,7 +9,8 @@ namespace ExcelTable.EntityFrameworkCore
 {
     [DependsOn(
         typeof(ExcelTableCoreModule), 
-        typeof(AbpZeroCoreEntityFrameworkCoreModule))]
+        typeof(AbpZeroCoreEntityFrameworkCoreModule),
+         typeof(AbpDapperModule))]
     public class ExcelTableEntityFrameworkModule : AbpModule
     {
         /* Used it tests to skip dbcontext registration, in order to use in-memory database of EF Core */

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <VersionPrefix>1.0.0.0</VersionPrefix>
     <TargetFramework>net7.0</TargetFramework>
@@ -16,5 +16,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="NewFolder\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Abp.Dapper" Version="8.4.0" />
   </ItemGroup>
 </Project>

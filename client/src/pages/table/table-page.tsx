@@ -1,7 +1,7 @@
 import { DataTable } from "@components/data-table/data-table";
 import { columns } from "./components/columns";
 import PageTitle from "@components/commons/page-title";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useGetAllProducts } from "@apis/queries/product";
 import { PaginationState } from "@tanstack/react-table";
 import Toolbar from "./components/tool-bar";
@@ -10,11 +10,13 @@ import { useTranslation } from "react-i18next";
 import "handsontable/dist/handsontable.full.min.css";
 import Handsontable from "handsontable/base";
 import { registerAllModules } from "handsontable/registry";
-import accountData from "../../assets/accounts.json";
+// import accountData from "../../assets/accounts.json";
 import costCenterData from "../../assets/cost-centers.json";
 
 registerAllModules();
 import { HotTable } from "@handsontable/react";
+import { apiurl } from "src/env-variable";
+import { getGlAccountAll,getCostCenterAll } from "@apis/axios/service/glaccount";
 
 type FormType = {
   category: string;
@@ -23,7 +25,7 @@ type FormType = {
 
 export function Table() {
   const { t } = useTranslation();
-
+  
   const toolbarForm = useForm<FormType>({
     defaultValues: {
       category: "",
@@ -37,14 +39,39 @@ export function Table() {
   });
   const hotRef = useRef(null);
   const [columns, setColumns] = useState([]);
+  console.log("Console called")
+ 
+    const [glAccountDropdown, setGlAccountDropdown] = useState<string[]>([]);
 
-  const glAccountDropdown = accountData.map(
-    (item) => `${item.GLAccount} - ${item.ShortText}`
-  );
-  const costCenterDropdown = costCenterData.map(
-    (item) => `${item.CostCenterCode} - ${item.Name}`
-  );
-  console.log(glAccountDropdown, "glAccountDropdown");
+    useEffect(() => {
+      getGlAccountAll().then((response) => {
+        const accountData = response.result; // Assuming response.result contains the account data
+        const dropdownData = accountData.map(
+          (item: any) => `${item.glAccount} - ${item.shortText}`
+        );
+        setGlAccountDropdown(dropdownData);
+      });
+
+      console.log(glAccountDropdown, "glAccountDropdown");
+    }, []);
+
+    const [costCenterDropdown, setcostCenterDropdown] = useState<string[]>([]);
+
+    useEffect(() => {
+      getCostCenterAll().then((response) => {
+        const accountData = response.result; // Assuming response.result contains the account data
+        const dropdownData = accountData.map(
+          (item: any) => `${item.costCenterCode} - ${item.name}`
+        );
+        setcostCenterDropdown(dropdownData);
+      });
+
+      console.log(glAccountDropdown, "glAccountDropdown");
+    }, []);
+
+  // const costCenterDropdown = costCenterData.map(
+  //   (item) => `${item.CostCenterCode} - ${item.Name}`
+  // );
   const columnHeaders = [
     "Date",
     "GL Account",

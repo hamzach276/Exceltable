@@ -17,7 +17,7 @@ namespace ExcelTable.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -1083,6 +1083,10 @@ namespace ExcelTable.Migrations
                         .HasMaxLength(96)
                         .HasColumnType("nvarchar(96)");
 
+                    b.Property<string>("TargetNotifiers")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
@@ -1571,6 +1575,114 @@ namespace ExcelTable.Migrations
                     b.HasIndex("TenantId", "NormalizedUserName");
 
                     b.ToTable("AbpUsers");
+                });
+
+            modelBuilder.Entity("ExcelTable.Models.CostCenterModel", b =>
+                {
+                    b.Property<int>("CostCenterID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CostCenterID"));
+
+                    b.Property<string>("CoArea")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CostCenterCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ccOwner")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CostCenterID");
+
+                    b.ToTable("CostCenter");
+                });
+
+            modelBuilder.Entity("ExcelTable.Models.GLAccountsModel", b =>
+                {
+                    b.Property<int>("ChargeAccountID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChargeAccountID"));
+
+                    b.Property<string>("CompanyCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GLAccount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LongText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ShortText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ChargeAccountID");
+
+                    b.ToTable("GLAccounts");
+                });
+
+            modelBuilder.Entity("ExcelTable.Models.TransactionModel", b =>
+                {
+                    b.Property<int>("TransactionID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TransactionID"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ChargeAccountID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CostCenterID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ProfitCenter")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TransactionID");
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("ExcelTable.MultiTenancy.Tenant", b =>
