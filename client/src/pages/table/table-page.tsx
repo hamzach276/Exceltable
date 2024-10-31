@@ -33,7 +33,7 @@ type FormType = {
 
 export function Table() {
   const { t } = useTranslation();
-const [Update,setUpdate] = useState(false)
+
   const toolbarForm = useForm<FormType>({
     defaultValues: {
       category: "",
@@ -165,15 +165,11 @@ const [Update,setUpdate] = useState(false)
     if (changes) {
       changes.forEach(([row, prop, oldValue, newValue]) => {
         console.log(row, "row");
-        let updatedData: any ;
-        const updatedRow = { ...getData[row] };
-        const isTransactionID = updatedRow.transactionID
-        if(isTransactionID){
-          updatedData = { ...getData[row] };
-        } else{
-          updatedData = { ...changeRows }; 
-        } 
-        console.log(updatedData,"updatedData")
+
+        // Create a temporary object to hold the updated values
+        const updatedData = { ...changeRows }; // Assuming changeRows is in the format of an object
+
+        // Update the state based on property changes
         if (prop === "date") {
           updatedData.date = newValue;
         } else if (prop === "costCenterID") {
