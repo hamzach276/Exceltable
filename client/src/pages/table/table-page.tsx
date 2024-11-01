@@ -25,7 +25,7 @@ import {
   updateTransaction,
   deleteTransaction,
 } from "@apis/axios/service/glaccount";
-import { any } from "zod";
+import { any, number } from "zod";
 
 type FormType = {
   category: string;
@@ -364,22 +364,44 @@ export function Table() {
     }
   };
 
-  console.log(changeRows, "changes");
-  // const handleUpdateButtonClick = async () => {
-  //   console.log(changeRows, "changeRows before post"); // Log here to check data structure
-  //   await createTransaction(changeRows);
-  //   getTransaction().then((response) => {
-  //     const tablData = response.result; // Assuming response.result contains the account data
-  //     const formattedData = tablData.map((item: any) => ({
-  //       ...item,
-  //       date: moment(item.date).format("YYYY-MM-DD"),
-  //       glAccount: `${item.glAccount} - ${item.glName}`,
-  //       costCenterCode: `${item.costCenterCode} - ${item.centerCodeName}`,
-  //     }));
-  //     console.log(tablData, "tablData");
-  //     setGetdata(formattedData);
-  //   });
-  // };
+ 
+  const handlePaste = (data: any[], coords: any) => {
+    const newRows = data.map((rowData, rowIndex) => {
+      console.log(rowData,"rowData")
+
+      const selectedGlAccount = glAccountForSelection.find(
+        (item) => `${item.glAccount} - ${item.shortText}` === rowData[1]
+      );
+      const selectedCostCenter = costCenterSelection.find(
+        (item) => `${item.costCenterCode} - ${item.name}` === rowData[3]
+      );
+      const updatedRow = {
+        transactionID: 0, // Assuming new rows have transactionID set to 0
+        date: rowData[0] || "", // Assuming date is the first column
+        chargeAccountID: selectedGlAccount?.chargeAccountID, // Default value
+        amount: Number(rowData[2]) || 0, // Assuming amount is the second column
+        costCenterID: selectedCostCenter?.costCenterID, // Default value
+        profitCenter: rowData[5] || "", // Assuming profit center is the third column
+        createdAt: new Date().toISOString(), // Set the creation date to now
+        modifiedAt: new Date().toISOString(), // Set the modified date to now
+      };
+      return updatedRow;
+    });
+  
+     console.log(newRows,"newRows") 
+     setChangeRows(newRows[0])   // Here, you can set the changeRows state or merge with existing data
+   ;
+  };
+  const beforeChangeHandler = (changes: any) => {
+    if (changes) {
+      changes.forEach(([row, prop, oldValue, newValue]) => {
+        if (prop === "paste") {
+          handlePaste(newValue);
+        }
+      });
+    }
+  }
+console.log(changeRows,"chages")
   const handleUpdateButtonClick = async () => {
     try {
       if (changeRows.transactionID) {
@@ -481,8 +503,10 @@ export function Table() {
         // readOnly={true}
         dropdownMenu={true}
         afterChange={afterChangeHandler}
+        beforeChange={beforeChangeHandler} // Add this event
         beforeCreateRow={beforeCreateRowHandle}
         beforeRemoveRow={handleRemoveRow}
+        afterPaste={handlePaste}
         ref={hotRef}
         licenseKey="non-commercial-and-evaluation" // for non-commercial use
       />
