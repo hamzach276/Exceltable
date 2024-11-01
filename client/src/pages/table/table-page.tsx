@@ -8,7 +8,7 @@ import Toolbar from "./components/tool-bar";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import "handsontable/dist/handsontable.full.min.css";
-import Handsontable from "handsontable/base";
+// import Handsontable from "handsontable/base";
 import { registerAllModules } from "handsontable/registry";
 import moment from "moment";
 // import accountData from "../../assets/accounts.json";
@@ -22,7 +22,8 @@ import {
   getCostCenterAll,
   getTransaction,
   createTransaction,
-  updateTransaction
+  updateTransaction,
+  deleteTransaction,
 } from "@apis/axios/service/glaccount";
 import { any } from "zod";
 
@@ -41,18 +42,22 @@ export function Table() {
     },
   });
 
-  const [paginationState, setPaginationState] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+  // const [paginationState, setPaginationState] = useState<PaginationState>({
+  //   pageIndex: 0,
+  //   pageSize: 10,
+  // });
   const hotRef = useRef(null);
-  const [columns, setColumns] = useState([]);
+  // const [columns, setColumns] = useState([]);
   console.log("Console called");
 
   const [glAccountDropdown, setGlAccountDropdown] = useState<string[]>([]);
-  const [glAccountForSelection, setGlAccountForSelection] = useState<string[]>([]);
+  const [glAccountForSelection, setGlAccountForSelection] = useState<string[]>(
+    []
+  );
 
-  const [getData, setGetdata] = useState<Array[]>([]);
+  const [getData, setGetdata] = useState<string[]>([]);
+  const [isEditable, setIsEditale] = useState<boolean>(true);
+  const [loader, setsetLoader] = useState<boolean>(false);
   const [changeRows, setChangeRows] = useState({
     transactionID: 0,
     date: "",
@@ -63,7 +68,11 @@ export function Table() {
     createdAt: "",
     modifiedAt: "",
   });
-
+  useEffect(() => {
+    if (getData.length === 0) {
+      setGetdata([{ date: "", glAccount: "", amount: 0, costCenterCode: "", ccOwner: "", profitCenter: "" }]); // Add default empty row
+    }
+  }, [getData]);
   useEffect(() => {
     getGlAccountAll().then((response) => {
       const accountData = response.result; // Assuming response.result contains the account data
@@ -71,7 +80,7 @@ export function Table() {
         (item: any) => `${item.glAccount} - ${item.shortText}`
       );
       setGlAccountDropdown(dropdownData);
-      setGlAccountForSelection(accountData)
+      setGlAccountForSelection(accountData);
     });
 
     console.log(glAccountDropdown, "glAccountDropdown");
@@ -87,13 +96,27 @@ export function Table() {
         (item: any) => `${item.costCenterCode} - ${item.name}`
       );
       setcostCenterDropdown(dropdownData);
-      setcostCenterSelecltion(accountData)
+      setcostCenterSelecltion(accountData);
     });
 
     console.log(glAccountDropdown, "glAccountDropdown");
   }, []);
 
   useEffect(() => {
+    fetchData();
+    // getTransaction().then((response) => {
+    //   const tablData = response.result; // Assuming response.result contains the account data
+    //   const formattedData = tablData.map((item: any) => ({
+    //     ...item,
+    //     date: moment(item.date).format("YYYY-MM-DD"),
+    //     glAccount: `${item.glAccount} - ${item.glName}`,
+    //     costCenterCode: `${item.costCenterCode} - ${item.centerCodeName}`,
+    //   }));
+    //   console.log(tablData, "tablData");
+    //   setGetdata(formattedData);
+    // });
+  }, []);
+  const fetchData = () => {
     getTransaction().then((response) => {
       const tablData = response.result; // Assuming response.result contains the account data
       const formattedData = tablData.map((item: any) => ({
@@ -105,7 +128,7 @@ export function Table() {
       console.log(tablData, "tablData");
       setGetdata(formattedData);
     });
-  }, []);
+  };
   // const costCenterDropdown = costCenterData.map(
   //   (item) => `${item.CostCenterCode} - ${item.Name}`
   // );
@@ -128,29 +151,26 @@ export function Table() {
   // });
   const tableData = [
     {
+      amount: 110,
+      ccOwner: "",
+      costCenterCode: "",
+
+      createdAt: "2024-11-01T05:25:18.1366667",
       date: "",
       glAccount: "",
-      amount: 10,
-      costCenterCode: "",
-      ccOwner: "",
-      profitCenter: "",
+
+      modifiedAt: "2024-11-01T05:25:18.1366667",
+      profitCenter: "110000000",
     },
-    {
-      date: "",
-      glAccount: "",
-      amount: 20,
-      costCenterCode: "",
-      ccOwner: "",
-      profitCenter: "",
-    },
-    {
-      date: "",
-      glAccount: "",
-      amount: 30,
-      costCenterCode: "",
-      ccOwner: "",
-      profitCenter: "",
-    },
+
+    // {
+    //   date: "",
+    //   glAccount: "",
+    //   amount: 30,
+    //   costCenterCode: "",
+    //   ccOwner: "",
+    //   profitCenter: "",
+    // },
   ];
   const updateCCOwner = (row: any, costCenterValue: any) => {
     const selectedCostCenter = costCenterData.find(
@@ -159,69 +179,257 @@ export function Table() {
     return selectedCostCenter ? selectedCostCenter.ccOwner : "";
   };
 
+  // const afterChangeHandler = (changes: any, source: any) => {
+  //   if (source === "loadData") return; // Prevent loop on data load
+
+  //   if (changes) {
+  //     changes.forEach(([row, prop, oldValue, newValue]) => {
+  //       console.log(row, "row");
+
+  //       // Create a temporary object to hold the updated values
+  //       const updatedData = {...changeRows}; // Assuming changeRows is in the format of an object
+
+  //       // Update the state based on property changes
+  //       if (prop === "date") {
+  //         updatedData.date = newValue;
+  //       } else if (prop === "costCenterID") {
+  //         updatedData.costCenterID = newValue;
+  //       } else if (prop === "costCenterCode") {
+  //         const newCCOwner = updateCCOwner(row, newValue);
+  //         hotRef.current.hotInstance.setDataAtRowProp(
+  //           row,
+  //           "ccOwner",
+  //           newCCOwner
+  //         );
+  //         const selectedCostCenter = costCenterSelection.find(item => `${item.costCenterCode} - ${item.name}` === newValue);
+  //         console.log(selectedCostCenter,"selectedCostCenter")
+  //         if (selectedCostCenter) {
+  //             updatedData.costCenterID = selectedCostCenter.costCenterID; // Store corresponding ID
+
+  //         }
+  //         // Assuming costCenterCode should also be stored
+  //         // updatedData.costCenterID = newValue;
+  //       } else if (prop === "glAccount") {
+  //         const selectedGlAccount = glAccountForSelection.find(item => `${item.glAccount} - ${item.shortText}` === newValue);
+  //         if (selectedGlAccount) {
+  //             updatedData.chargeAccountID = selectedGlAccount.chargeAccountID; // Store corresponding ID
+  //         }
+  //       } else if (prop === "amount") {
+  //         updatedData.amount = newValue;
+  //       } else if (prop === "profitCenter") {
+  //         updatedData.profitCenter = newValue;
+  //       }
+
+  //       // Always update the common properties
+  //       updatedData.transactionID = row; // Or set this to the corresponding ID if available
+  //       updatedData.createdAt = new Date().toISOString(); // Update modified date/time
+  //       updatedData.modifiedAt = new Date().toISOString(); // Update modified date/time
+
+  //       // Update the state with the new values
+  //       setChangeRows(updatedData);
+  //     });
+  //   }
+  // };
+  const beforeCreateRowHandle = () => {
+    const updatedData = {
+      transactionID: 0,
+      date: "", // Default for new entries
+      chargeAccountID: 0,
+      amount: 0,
+      costCenterID: 0,
+      profitCenter: "",
+      createdAt: new Date().toISOString(), // Default for new entries
+      modifiedAt: new Date().toISOString(), // Update modified date
+    };
+    setChangeRows(updatedData);
+    console.log("when row added");
+  };
   const afterChangeHandler = (changes: any, source: any) => {
     if (source === "loadData") return; // Prevent loop on data load
 
     if (changes) {
       changes.forEach(([row, prop, oldValue, newValue]) => {
         console.log(row, "row");
+        const id = getData[row]?.transactionID || 0;
+        let updatedData = { ...changeRows };
+        if (id === 0) {
+          console.log(id, "id");
 
-        // Create a temporary object to hold the updated values
-        const updatedData = { ...changeRows }; // Assuming changeRows is in the format of an object
-
-        // Update the state based on property changes
-        if (prop === "date") {
-          updatedData.date = newValue;
-        } else if (prop === "costCenterID") {
-          updatedData.costCenterID = newValue;
-        } else if (prop === "costCenterCode") {
-          const newCCOwner = updateCCOwner(row, newValue);
-          hotRef.current.hotInstance.setDataAtRowProp(
-            row,
-            "ccOwner",
-            newCCOwner
-          );
-          const selectedCostCenter = costCenterSelection.find(item => `${item.costCenterCode} - ${item.name}` === newValue);
-          console.log(selectedCostCenter,"selectedCostCenter")
-          if (selectedCostCenter) {
+          // Update the state based on property changes
+          if (prop === "date") {
+            updatedData.date = newValue;
+          } else if (prop === "costCenterID") {
+            updatedData.costCenterID = newValue;
+          } else if (prop === "costCenterCode") {
+            const newCCOwner = updateCCOwner(row, newValue);
+            hotRef.current.hotInstance.setDataAtRowProp(
+              row,
+              "ccOwner",
+              newCCOwner
+            );
+            const selectedCostCenter = costCenterSelection.find(
+              (item) => `${item.costCenterCode} - ${item.name}` === newValue
+            );
+            console.log(selectedCostCenter, "selectedCostCenter");
+            if (selectedCostCenter) {
               updatedData.costCenterID = selectedCostCenter.costCenterID; // Store corresponding ID
-              
-          }
-          // Assuming costCenterCode should also be stored
-          // updatedData.costCenterID = newValue;
-        } else if (prop === "glAccount") {
-          const selectedGlAccount = glAccountForSelection.find(item => `${item.glAccount} - ${item.shortText}` === newValue);
-          if (selectedGlAccount) {
+            }
+            // Assuming costCenterCode should also be stored
+            // updatedData.costCenterID = newValue;
+          } else if (prop === "glAccount") {
+            const selectedGlAccount = glAccountForSelection.find(
+              (item) => `${item.glAccount} - ${item.shortText}` === newValue
+            );
+            if (selectedGlAccount) {
               updatedData.chargeAccountID = selectedGlAccount.chargeAccountID; // Store corresponding ID
+            }
+          } else if (prop === "amount") {
+            updatedData.amount = newValue;
+          } else if (prop === "profitCenter") {
+            updatedData.profitCenter = newValue;
           }
-        } else if (prop === "amount") {
-          updatedData.amount = newValue;
-        } else if (prop === "profitCenter") {
-          updatedData.profitCenter = newValue;
+
+          // Always update the common properties
+          updatedData.transactionID = 0; // Or set this to the corresponding ID if available
+          updatedData.createdAt = new Date().toISOString(); // Update modified date/time
+          updatedData.modifiedAt = new Date().toISOString(); // Update modified date/time
+
+          // Update the state with the new values
+          setChangeRows(updatedData);
+        } else if (id > 0) {
+          console.log(id, "id");
+          if (isEditable) {
+            const existingData = getData[row];
+            updatedData = {
+              transactionID: existingData.transactionID,
+              date: existingData.date,
+              chargeAccountID: existingData.chargeAccountID,
+              amount: existingData.amount,
+              costCenterID: existingData.costCenterID,
+              profitCenter: existingData.profitCenter,
+              createdAt: existingData.createdAt,
+              modifiedAt: new Date().toISOString(), // Update modified date
+            };
+          }
+
+          // Update the state based on property changes
+          if (prop === "date") {
+            updatedData.date = newValue;
+            setIsEditale(false);
+          } else if (prop === "costCenterCode") {
+            setIsEditale(false);
+            const newCCOwner = updateCCOwner(row, newValue);
+            hotRef.current.hotInstance.setDataAtRowProp(
+              row,
+              "ccOwner",
+              newCCOwner
+            );
+            const selectedCostCenter = costCenterSelection.find(
+              (item) => `${item.costCenterCode} - ${item.name}` === newValue
+            );
+            console.log(selectedCostCenter, "selectedCostCenter");
+            if (selectedCostCenter) {
+              updatedData.costCenterID = selectedCostCenter.costCenterID; // Store corresponding ID
+            }
+            // Assuming costCenterCode should also be stored
+            // updatedData.costCenterID = newValue;
+          } else if (prop === "glAccount") {
+            setIsEditale(false);
+            const selectedGlAccount = glAccountForSelection.find(
+              (item) => `${item.glAccount} - ${item.shortText}` === newValue
+            );
+            if (selectedGlAccount) {
+              updatedData.chargeAccountID = selectedGlAccount.chargeAccountID; // Store corresponding ID
+            }
+          } else if (prop === "amount") {
+            updatedData.amount = newValue;
+            setIsEditale(false);
+          } else if (prop === "profitCenter") {
+            updatedData.profitCenter = newValue;
+            setIsEditale(false);
+          }
+
+          // Always update the common properties
+          updatedData.transactionID = getData[row].transactionID; // Keep the existing ID
+          updatedData.createdAt = new Date().toISOString();
+          updatedData.modifiedAt = new Date().toISOString(); // Update modified date/time
+
+          setChangeRows((prevState) => ({
+            ...prevState,
+            ...updatedData,
+          }));
+          console.log(updatedData, "updatedData");
         }
-
-        // Always update the common properties
-        updatedData.transactionID = row; // Or set this to the corresponding ID if available
-        updatedData.createdAt = new Date().toISOString(); // Update modified date/time
-        updatedData.modifiedAt = new Date().toISOString(); // Update modified date/time
-
-        // Update the state with the new values
-        setChangeRows(updatedData);
       });
     }
   };
 
   console.log(changeRows, "changes");
+  // const handleUpdateButtonClick = async () => {
+  //   console.log(changeRows, "changeRows before post"); // Log here to check data structure
+  //   await createTransaction(changeRows);
+  //   getTransaction().then((response) => {
+  //     const tablData = response.result; // Assuming response.result contains the account data
+  //     const formattedData = tablData.map((item: any) => ({
+  //       ...item,
+  //       date: moment(item.date).format("YYYY-MM-DD"),
+  //       glAccount: `${item.glAccount} - ${item.glName}`,
+  //       costCenterCode: `${item.costCenterCode} - ${item.centerCodeName}`,
+  //     }));
+  //     console.log(tablData, "tablData");
+  //     setGetdata(formattedData);
+  //   });
+  // };
   const handleUpdateButtonClick = async () => {
-    console.log(changeRows, "changeRows before post"); // Log here to check data structure
-    await createTransaction(changeRows);
-};
+    try {
+      if (changeRows.transactionID) {
+        // Update existing transaction
+        await updateTransaction(changeRows, setIsEditale ,setsetLoader);
+        console.log("Updated transaction:", changeRows);
+        fetchData();
+      } else {
+        // Create a new transaction
+        await createTransaction(changeRows,setsetLoader);
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Error handling transaction:", error);
+    }
+  };
+  const handleRemoveRow = async (rowIndex: number) => {
+    // Check if rowIndex is within bounds
+    if (rowIndex < 0 || rowIndex >= getData.length) {
+      console.warn("Invalid rowIndex:", rowIndex);
+      return; // Exit the function if rowIndex is invalid
+    }
 
+    // Get the transaction ID of the row being deleted
+    const transactionID = getData[rowIndex]?.transactionID;
+    console.log(rowIndex, "rowIndex");
+
+    if (transactionID) {
+      console.log(transactionID, "transactionID");
+
+      try {
+        // Call the API to delete the transaction
+        await deleteTransaction(transactionID); // Replace with your delete API function
+
+        // Update local state to remove the deleted row
+        const updatedData = getData.filter((_, index) => index !== rowIndex);
+        setGetdata(updatedData); // Update the state with the new data
+      } catch (error) {
+        console.error("Error deleting row:", error);
+      }
+    } else {
+      console.warn("Transaction ID not found for the row:", rowIndex);
+    }
+  };
+ 
   return (
     <div className="w-full space-y-4">
       <PageTitle title={t("table.pageTitle")} desc={t("table.pageDesc")} />
 
-      <Toolbar form={toolbarForm} onUpdate={handleUpdateButtonClick} />
+      <Toolbar form={toolbarForm} onUpdate={handleUpdateButtonClick} btnLoader={loader} />
       <HotTable
         data={getData}
         // data={[
@@ -273,6 +481,8 @@ export function Table() {
         // readOnly={true}
         dropdownMenu={true}
         afterChange={afterChangeHandler}
+        beforeCreateRow={beforeCreateRowHandle}
+        beforeRemoveRow={handleRemoveRow}
         ref={hotRef}
         licenseKey="non-commercial-and-evaluation" // for non-commercial use
       />
