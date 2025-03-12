@@ -13,6 +13,15 @@ import { registerAllModules } from "handsontable/registry";
 import moment from "moment";
 // import accountData from "../../assets/accounts.json";
 import costCenterData from "../../assets/cost-centers.json";
+import {
+  ArrowDownFromLine,
+  Ellipsis,
+  Plus,
+  RefreshCcw ,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
+import { Button } from "@components/ui/button";
 
 registerAllModules();
 import { HotTable } from "@handsontable/react";
@@ -179,57 +188,7 @@ export function Table() {
     return selectedCostCenter ? selectedCostCenter.ccOwner : "";
   };
 
-  // const afterChangeHandler = (changes: any, source: any) => {
-  //   if (source === "loadData") return; // Prevent loop on data load
-
-  //   if (changes) {
-  //     changes.forEach(([row, prop, oldValue, newValue]) => {
-  //       console.log(row, "row");
-
-  //       // Create a temporary object to hold the updated values
-  //       const updatedData = {...changeRows}; // Assuming changeRows is in the format of an object
-
-  //       // Update the state based on property changes
-  //       if (prop === "date") {
-  //         updatedData.date = newValue;
-  //       } else if (prop === "costCenterID") {
-  //         updatedData.costCenterID = newValue;
-  //       } else if (prop === "costCenterCode") {
-  //         const newCCOwner = updateCCOwner(row, newValue);
-  //         hotRef.current.hotInstance.setDataAtRowProp(
-  //           row,
-  //           "ccOwner",
-  //           newCCOwner
-  //         );
-  //         const selectedCostCenter = costCenterSelection.find(item => `${item.costCenterCode} - ${item.name}` === newValue);
-  //         console.log(selectedCostCenter,"selectedCostCenter")
-  //         if (selectedCostCenter) {
-  //             updatedData.costCenterID = selectedCostCenter.costCenterID; // Store corresponding ID
-
-  //         }
-  //         // Assuming costCenterCode should also be stored
-  //         // updatedData.costCenterID = newValue;
-  //       } else if (prop === "glAccount") {
-  //         const selectedGlAccount = glAccountForSelection.find(item => `${item.glAccount} - ${item.shortText}` === newValue);
-  //         if (selectedGlAccount) {
-  //             updatedData.chargeAccountID = selectedGlAccount.chargeAccountID; // Store corresponding ID
-  //         }
-  //       } else if (prop === "amount") {
-  //         updatedData.amount = newValue;
-  //       } else if (prop === "profitCenter") {
-  //         updatedData.profitCenter = newValue;
-  //       }
-
-  //       // Always update the common properties
-  //       updatedData.transactionID = row; // Or set this to the corresponding ID if available
-  //       updatedData.createdAt = new Date().toISOString(); // Update modified date/time
-  //       updatedData.modifiedAt = new Date().toISOString(); // Update modified date/time
-
-  //       // Update the state with the new values
-  //       setChangeRows(updatedData);
-  //     });
-  //   }
-  // };
+ 
   const beforeCreateRowHandle = () => {
     const updatedData = {
       transactionID: 0,
@@ -450,76 +409,98 @@ console.log(changeRows,"chages")
   return (
     <div className="w-full space-y-4">
       <PageTitle title={t("table.pageTitle")} desc={t("table.pageDesc")} />
-
-      <Toolbar form={toolbarForm} onUpdate={handleUpdateButtonClick} btnLoader={loader} />
+      <div className="flex justify-end">
+      {/* <button
+      onClick={() => {
+        const exportPlugin = hotRef.current.hotInstance.getPlugin('exportFile');
+        exportPlugin.downloadFile('csv', {
+        bom: false,
+        columnDelimiter: ',',
+        columnHeaders: true,
+        exportHiddenColumns: true,
+        exportHiddenRows: true,
+        fileExtension: 'csv',
+        filename: 'Handsontable-Export_[YYYY]-[MM]-[DD]',
+        mimeType: 'text/csv',
+        rowDelimiter: '\r\n',
+        rowHeaders: true
+        });
+      }}
+      className="btn btn-primary"
+      >
+      Export to CSV
+      </button> */}
+      <Button onClick={() => {
+        const exportPlugin = hotRef.current.hotInstance.getPlugin('exportFile');
+        exportPlugin.downloadFile('csv', {
+        bom: false,
+        columnDelimiter: ',',
+        columnHeaders: true,
+        exportHiddenColumns: true,
+        exportHiddenRows: true,
+        fileExtension: 'csv',
+        filename: 'Handsontable-Export_[YYYY]-[MM]-[DD]',
+        mimeType: 'text/csv',
+        rowDelimiter: '\r\n',
+        rowHeaders: true
+        });
+      }}>
+            <ArrowDownFromLine className="h-4 w-4 mr-1" />
+            Download Report
+          </Button> 
+      </div>
       <HotTable
-        data={getData}
-        // data={[
-        //   ["", "Tesla", " ", "Toyota", "Ford"],
-        //   ["2019", 10, 11, 12, 13],
-        //   ["2020", 20, 11, 14, 13],
-        //   ["2021", 30, 15, 12, 13],
-        // ]}
-        colHeaders={columnHeaders}
-        columns={[
-          {
-            type: "date",
-            data: "date", // Matches the key in tableData
-            readOnly: false,
-            width: "90", // editable
-            dateFormat: "YYYY-MM-DD",
-          },
-          {
-            type: "autocomplete",
-            source: glAccountDropdown,
-            data: "glAccount", // Matches the key in tableData
-            readOnly: false, // editable
-          },
-          { data: "amount", type: "numeric" },
-          {
-            type: "autocomplete",
-            source: costCenterDropdown,
-            data: "costCenterCode", // edit able
-            readOnly: false,
-          },
-          { data: "ccOwner" },
-          { data: "profitCenter" },
-        ]}
-        className="custom-table" // Add a unique class name
-        // columns={columns}
-        stretchH="all"
-        manualRowResize={true}
-        manualColumnResize={true}
-        rowHeaders={true}
-        height="200"
-        rowHeaderWidth={25}
-        contextMenu={true}
-        filters={true}
-        width="100%"
-        hiddenColumns={{
-          indicators: true,
-          columns: [6],
-        }}
-        // readOnly={true}
-        dropdownMenu={true}
-        afterChange={afterChangeHandler}
-        beforeChange={beforeChangeHandler} // Add this event
-        beforeCreateRow={beforeCreateRowHandle}
-        beforeRemoveRow={handleRemoveRow}
-        afterPaste={handlePaste}
-        ref={hotRef}
-        licenseKey="non-commercial-and-evaluation" // for non-commercial use
+      data={getData}
+      colHeaders={columnHeaders}
+      columns={[
+        {
+        type: "date",
+        data: "date", // Matches the key in tableData
+        readOnly: false,
+        width: "90", // editable
+        dateFormat: "YYYY-MM-DD",
+        },
+        {
+        type: "autocomplete",
+        source: glAccountDropdown,
+        data: "glAccount", // Matches the key in tableData
+        readOnly: false, // editable
+        },
+        { data: "amount", type: "numeric" },
+        {
+        type: "autocomplete",
+        source: costCenterDropdown,
+        data: "costCenterCode", // edit able
+        readOnly: false,
+        },
+        { data: "ccOwner" },
+        { data: "profitCenter" },
+      ]}
+      className="custom-table" // Add a unique class name
+      stretchH="all"
+      manualRowResize={true}
+      manualColumnResize={true}
+      rowHeaders={true}
+      height="200"
+      rowHeaderWidth={25}
+      contextMenu={true}
+      filters={true}
+      width="100%"
+      hiddenColumns={{
+        indicators: true,
+        columns: [6],
+      }}
+      dropdownMenu={true}
+      afterChange={afterChangeHandler}
+      beforeChange={beforeChangeHandler} // Add this event
+      beforeCreateRow={beforeCreateRowHandle}
+      beforeRemoveRow={handleRemoveRow}
+      afterPaste={handlePaste}
+      ref={hotRef}
+      licenseKey="non-commercial-and-evaluation" // for non-commercial use
       />
+      <Toolbar form={toolbarForm} onUpdate={handleUpdateButtonClick} btnLoader={loader} />
 
-      {/* <DataTable
-        data={data?.data.products}
-        columns={columns}
-        loading={isLoading}
-        rowCount={data?.data.total}
-        manualPagination={true}
-        paginationState={paginationState}
-        onPaginationChange={setPaginationState}
-      /> */}
     </div>
   );
 }
