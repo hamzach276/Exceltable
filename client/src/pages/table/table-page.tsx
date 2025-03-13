@@ -13,6 +13,8 @@ import { registerAllModules } from "handsontable/registry";
 import moment from "moment";
 // import accountData from "../../assets/accounts.json";
 import costCenterData from "../../assets/cost-centers.json";
+import "./components/table.css";
+import { toast } from "sonner";
 import {
   ArrowDownFromLine,
   Ellipsis,
@@ -205,7 +207,7 @@ export function Table() {
   };
   const afterChangeHandler = (changes: any, source: any) => {
     if (source === "loadData") return; // Prevent loop on data load
-
+debugger;
     if (changes) {
       changes.forEach(([row, prop, oldValue, newValue]) => {
         console.log(row, "row");
@@ -363,8 +365,14 @@ export function Table() {
 console.log(changeRows,"chages")
   const handleUpdateButtonClick = async () => {
     try {
+      if (!changeRows.date || !changeRows.chargeAccountID || !changeRows.amount || !changeRows.costCenterID || !changeRows.profitCenter) {
+        console.error("Validation failed: All fields must be filled.");
+        toast.error("Validation failed: All fields must be filled.");
+        return;
+      }
       if (changeRows.transactionID) {
         // Update existing transaction
+
         await updateTransaction(changeRows, setIsEditale ,setsetLoader);
         console.log("Updated transaction:", changeRows);
         fetchData();
@@ -450,55 +458,128 @@ console.log(changeRows,"chages")
           </Button> 
       </div>
       <HotTable
-      data={getData}
-      colHeaders={columnHeaders}
-      columns={[
-        {
-        type: "date",
-        data: "date", // Matches the key in tableData
-        readOnly: false,
-        width: "90", // editable
-        dateFormat: "YYYY-MM-DD",
-        },
-        {
-        type: "autocomplete",
-        source: glAccountDropdown,
-        data: "glAccount", // Matches the key in tableData
-        readOnly: false, // editable
-        },
-        { data: "amount", type: "numeric" },
-        {
-        type: "autocomplete",
-        source: costCenterDropdown,
-        data: "costCenterCode", // edit able
-        readOnly: false,
-        },
-        { data: "ccOwner" },
-        { data: "profitCenter" },
-      ]}
-      className="custom-table" // Add a unique class name
-      stretchH="all"
-      manualRowResize={true}
-      manualColumnResize={true}
-      rowHeaders={true}
-      height="200"
-      rowHeaderWidth={25}
-      contextMenu={true}
-      filters={true}
-      width="100%"
-      hiddenColumns={{
-        indicators: true,
-        columns: [6],
-      }}
-      dropdownMenu={true}
-      afterChange={afterChangeHandler}
-      beforeChange={beforeChangeHandler} // Add this event
-      beforeCreateRow={beforeCreateRowHandle}
-      beforeRemoveRow={handleRemoveRow}
-      afterPaste={handlePaste}
-      ref={hotRef}
-      licenseKey="non-commercial-and-evaluation" // for non-commercial use
-      />
+  data={getData}
+  colHeaders={columnHeaders}
+  columns={[
+    {
+      type: "date",
+      data: "date", 
+      readOnly: false,
+      width: "90",
+      dateFormat: "YYYY-MM-DD",
+      validator: function(value, callback) {
+        if (!value || moment(value, "YYYY-MM-DD", true).isValid()) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      },
+      allowInvalid: false
+    },
+    {
+      type: "autocomplete",
+      source: glAccountDropdown,
+      data: "glAccount",
+      readOnly: false,
+      validator: function(value, callback) {
+        if (!value || glAccountDropdown.includes(value)) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      },
+      allowInvalid: false
+    },
+    { 
+      data: "amount", 
+      type: "numeric",
+      validator: function(value, callback) {
+        if (value === '' || (typeof value === 'number' && !isNaN(value))) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      },
+      allowInvalid: false
+    },
+    {
+      type: "autocomplete",
+      source: costCenterDropdown,
+      data: "costCenterCode",
+      readOnly: false,
+      validator: function(value, callback) {
+        if (!value || costCenterDropdown.includes(value)) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      },
+      allowInvalid: false
+    },
+    { data: "ccOwner" },
+    { 
+      data: "profitCenter",
+      validator: function(value, callback) {
+        if (value === '' || (String(value).match(/^\d+$/) !== null)) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      },
+      allowInvalid: false
+    },
+  ]}
+  className="custom-table"
+  stretchH="all"
+  manualRowResize={true}
+  manualColumnResize={true}
+  rowHeaders={true}
+  height="200"
+  rowHeaderWidth={25}
+  contextMenu={true}
+  filters={true}
+  width="100%"
+  hiddenColumns={{
+    indicators: true,
+    columns: [6],
+  }}
+  dropdownMenu={true}
+  afterChange={afterChangeHandler}
+  beforeChange={beforeChangeHandler}
+  beforeCreateRow={beforeCreateRowHandle}
+  beforeRemoveRow={handleRemoveRow}
+  afterPaste={handlePaste}
+  ref={hotRef}
+  licenseKey="non-commercial-and-evaluation"
+  invalidCellClassName="highlight-error"
+  cells={(row, col) => {
+    const cellProperties = {};
+    const hot = hotRef.current?.hotInstance;
+    if (hot) {
+      const value = hot.getDataAtCell(row, col);
+      if (col === 2) { // Amount column
+        if (value !== '' && (typeof value !== 'number' || isNaN(value))) {
+          toast.error("Please input valid number");
+          cellProperties.className = 'highlight-error';
+          debugger;
+        }
+      } else if (col === 5) { // Profit Center column
+        if (value !== '' && String(value).match(/^\d+$/) === null) {
+          cellProperties.className = 'highlight-error';
+        }
+      } else if (col === 1) { // GL Account column
+        if (value !== '' && !glAccountDropdown.includes(value)) {
+          cellProperties.className = 'highlight-error';
+        }
+      } else if (col === 3) { // Cost Center column
+        if (value !== '' && !costCenterDropdown.includes(value)) {
+          cellProperties.className = 'highlight-error';
+        }
+      }
+    }
+    return cellProperties;
+  }}
+/>
       <Toolbar form={toolbarForm} onUpdate={handleUpdateButtonClick} btnLoader={loader} />
 
     </div>

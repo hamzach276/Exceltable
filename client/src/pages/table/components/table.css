@@ -1,0 +1,12 @@
+/* Add this to your CSS file */
+.highlight-error {
+    border: 2px solid red !important;
+    background-color: rgba(255, 0, 0, 0.1) !important;
+  }
+  
+  /* Ensure Handsontable's error highlighting is visible */
+  .handsontable .htInvalid {
+    border: 2px solid red !important;
+    background-color: rgba(255, 0, 0, 0.1) !important;
+  }
+  

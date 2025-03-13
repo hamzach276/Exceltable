@@ -65,6 +65,7 @@
   color: black;
   font-weight: bold;
 }
+
 @layer base {
   * {
     @apply border-border;
