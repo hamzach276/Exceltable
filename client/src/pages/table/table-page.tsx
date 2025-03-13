@@ -359,6 +359,23 @@ debugger;
         if (prop === "paste") {
           handlePaste(newValue);
         }
+        if (prop === "amount") {
+          if (newValue !== '' && (isNaN(newValue))) {
+            toast.error("Amount should be a number");
+          }
+        } else if (prop === "profitCenter") {
+          if (newValue !== '' && String(newValue).match(/^\d+$/) === null) {
+            toast.error("Profit Center should be a number");
+          }
+        } else if (prop === "glAccount") {
+          if (!glAccountDropdown.includes(newValue)) {
+            toast.error("Invalid GL Account");
+          }
+        } else if (prop === "costCenterCode") {
+          if (newValue !== '' && !costCenterDropdown.includes(newValue)) {
+            toast.error("Invalid Cost Center");
+          }
+        }
       });
     }
   }
@@ -552,37 +569,38 @@ console.log(changeRows,"chages")
   ref={hotRef}
   licenseKey="non-commercial-and-evaluation"
   invalidCellClassName="highlight-error"
-  cells={(row, col) => {
-    const cellProperties = {};
-    const hot = hotRef.current?.hotInstance;
-    if (hot) {
-      const value = hot.getDataAtCell(row, col);
-      if (col === 2) { // Amount column
-        if (value !== '' && (typeof value !== 'number' || isNaN(value))) {
-          toast.error("amount should be a number");
-          cellProperties.className = 'highlight-error';
-          debugger;
-        }
-      } else if (col === 5) { // Profit Center column
-        if (value && String(value).match(/^\d+$/) === null) {
-          toast.error("profit center should be a number");
+  // cells={(row, col) => {
+  //   const cellProperties = {};
+  //   const hot = hotRef.current?.hotInstance;
+  //   if (hot) {
+  //     const value = hot.getDataAtCell(row, col);
+  //     if (col === 2) { // Amount column
+  //       if (value !== '' && (typeof value !== 'number' || isNaN(value))) {
+  //         toast.error("amount should be a number");
+  //         cellProperties.className = 'highlight-error';
+  //         debugger;
+  //       }
+  //     } else if (col === 5) { // Profit Center column
+  //       if (value !== '' && String(value).match(/^\d+$/) === null) {
+  //         toast.error("profit center should be a number");
 
-          cellProperties.className = 'highlight-error';
-        }
-      } else if (col === 1) { // GL Account column
-        if (value !== '' && !glAccountDropdown.includes(value)) {
-          toast.error("invalid glAccount");
-          cellProperties.className = 'highlight-error';
-        }
-      } else if (col === 3) { // Cost Center column
-        if (value !== '' && !costCenterDropdown.includes(value)) {
-          toast.error("invalid costcenter");
-          cellProperties.className = 'highlight-error';
-        }
-      }
-    }
-    return cellProperties;
-  }}
+  //         cellProperties.className = 'highlight-error';
+  //       }
+  //     } else if (col === 1) { // GL Account column
+  //       if (!glAccountDropdown.includes(value)) {
+  //         console.log("invalid")
+  //         toast.error("invalid glAccount");
+  //         cellProperties.className = 'highlight-error';
+  //       }
+  //     } else if (col === 3) { // Cost Center column
+  //       if (value !== '' && !costCenterDropdown.includes(value)) {
+  //         toast.error("invalid costcenter");
+  //         cellProperties.className = 'highlight-error';
+  //       }
+  //     }
+  //   }
+  //   return cellProperties;
+  // }}
     // afterValidate={(isValid, value, row, col) => {
   //   const hot = hotRef.current?.hotInstance;
   //   if (hot) {
